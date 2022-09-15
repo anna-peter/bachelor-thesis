@@ -199,7 +199,7 @@ class MyCanvas extends JComponent {
     }
 }
 
-public class MergingFib {
+public class GoldenRatioSlopesSystem {
     //this method is used to draw the graphics 
   public static void main(String[] a) {
     JFrame window = new JFrame();
