@@ -150,7 +150,6 @@ class MyCanvas extends JComponent {
 
         // run threads for i=1 to i=100 starting threads
          for (int i=1;i<=100; i+=1) {
-            r = rand.nextDouble();
             runThreads(r, i, 10000, g, false, true, false, false);
         } 
     }
