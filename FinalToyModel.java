@@ -9,8 +9,9 @@ import java.awt.Graphics;
 
 import javax.swing.*;
 
+// A utility class which can detect if a number is a Fibonacci number.
 class Fibonacci { 
-    // a utility method that returns true if x is perfect square
+    // returns true if x is perfect square
     private static boolean isPerfectSquare(int x) {
         int s = (int) Math.sqrt(x);
         return (s*s == x);
@@ -23,12 +24,11 @@ class Fibonacci {
                 isPerfectSquare(5*n*n - 4);
     }
 }
-//the only method to be modified, really, is paint() (to see different outputs and console values)
 
-// the class Row represents rows in the evolution of threads
-// one row corresponds to a horizontal line in the space-time diagram 
+// The class Row represents rows in the evolution of threads, where one row corresponds to a horizontal line in the space-time diagram.
 class Row {
-    // we store x,y components and slopes of every starting point and evolve these as threads merge
+    // We store x and y components and slopes of every starting point and evolve these as threads merge. 
+    // Previous x and y positions are included to draw the threads.
     ArrayList<Integer> y;
     ArrayList<Double> x, slopes_numerators, slopes_denominators;
     ArrayList<Integer> thicknesses;
@@ -36,7 +36,6 @@ class Row {
     ArrayList<Double> last_x;
 
     public Row(int n, double r) {
-
             x = new ArrayList<Double>();
             y = new ArrayList<Integer>();
             slopes_numerators = new ArrayList<Double>();
@@ -48,11 +47,10 @@ class Row {
             for (int i=2; i<=n; i++) {
                 x.add(i*20.0); //starting points are spaced out 20 pixels
                 y.add(0);
-               // slopes_numerators.add( Math.floor(r*i ) - Math.floor(r*(i-1)) ); //slopes are the the difference of successive terms in lower wythoff sequence
-                slopes_numerators.add(2*Math.floor(r*i) - 2*Math.floor(r*(i-1)) -1); //experiment for lucas numbers 
+                slopes_numerators.add( Math.floor(r*i ) - Math.floor(r*(i-1)) ); //slopes are the the difference of successive terms in lower wythoff sequence
                 slopes_denominators.add(1.0);
-                thicknesses.add( 1); //initial thickness is 1
-                last_x.add(i*20.0); //starting points are spaced out 20 pixels
+                thicknesses.add(1);
+                last_x.add(i*20.0);
                 last_y.add(0);
             }
 
@@ -67,11 +65,12 @@ class Row {
             x.set(i, next_x);
             y.set(i, next_y);
         }
-        // merging slope = add numerators, denominators
+        // Check if threads collide and merge the slopes by adding the numerators and denominators.
+        // After merging two threads, we remove them and only keep the merged thread.
         for (int i=0; i<x.size()-1; i++) {
             if (x.get(i) >= x.get(i+1) ) {
                     int next_thickness = thicknesses.get(i) + thicknesses.get(i+1);
-                    double next_slope_numerator = slopes_numerators.get(i+1) + slopes_numerators.get(i);// resulting slope is the sum
+                    double next_slope_numerator = slopes_numerators.get(i+1) + slopes_numerators.get(i);
                     double next_slope_denominator = slopes_denominators.get(i+1) + slopes_denominators.get(i);
                     slopes_numerators.set(i, next_slope_numerator);
                     slopes_denominators.set(i, next_slope_denominator);
@@ -90,10 +89,10 @@ class Row {
 
 }
 
-// here we draw and run the threads
-// finetune how many starting threads, how many iteration, and how many test cases here
+// Here run the slopes system and draw the threads.
+// Finetune how many starting threads, how many iterations, and how many test cases here.
 class MyCanvas extends JComponent {
-    // this is just to color thicknesses which aren't fibonacci in red
+    // This is just to color thicknesses which aren't Fibonacci in red.
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
 
@@ -109,8 +108,8 @@ class MyCanvas extends JComponent {
     }
     /*
      * @param r: tells us the ratio (like power of golden ratio, other number) to use for the slopes
-     * @param count_fib_flag: tells us if we want to print output of how many final threads, how many fibonacci numbers
-     * @param fib_output_flag: tells us if we want to print output of the final thread thicknesses, where non-fibonacci nrs. are printed red
+     * @param count_fib_flag: tells us if we want to print output of how many final threads, how many Fibonacci numbers
+     * @param fib_output_flag: tells us if we want to print output of the final thread thicknesses, where non-Fibonacci nrs. are printed red
      * @param info_flag: tells us if we want to print information of how many starting threads, iterations and final threads (best combined with fib_output_flag)
      * 
      * count_fib: startingThreads; numIterations; num_finalThreads; count_fib
@@ -120,7 +119,7 @@ class MyCanvas extends JComponent {
     private void runThreads(double r, int startingThreads, int numIterations, Graphics g, boolean draw, boolean count_fib_flag, boolean fib_output_flag, boolean info_flag) {
         Row row = new Row(startingThreads, r);
 
-        //draw the first 800 iterations, only if flag draw = true
+        //draw the first 800 iterations, only if the flag "draw" is set to true
         for (int i=0;i<numIterations;i++) {
             if (i < 800 && draw) {
                 for (int k=0; k < row.x.size(); k++) {
