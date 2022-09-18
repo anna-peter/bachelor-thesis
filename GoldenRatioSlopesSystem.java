@@ -14,9 +14,9 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.geom.Line2D;
 
-// a utility class to quickly identify Fibonacci numbers
+// A utility class to quickly identify Fibonacci numbers.
 class Fibonacci { 
-    // a utility method that returns true if x is perfect square
+    // returns true if x is perfect square
     private static boolean isPerfectSquare(int x) {
         int s = (int) Math.sqrt(x);
         return (s*s == x);
@@ -29,12 +29,11 @@ class Fibonacci {
                 isPerfectSquare(5*n*n - 4);
     }
 }
-//the only method to be modified, really, is paint() (to see different outputs and console values)
 
-// the class Row represents rows in the evolution of threads
-// one row corresponds to a horizontal line in the space-time diagram 
+// The class Row represents rows in the evolution of threads, where one row corresponds to a horizontal line in the space-time diagram.
 class Row {
-    // we store x,y components and slopes of every starting point and evolve these as threads merge
+    // We store x, y components and slopes of every starting point and evolve these as threads merge.
+    // Previous x and y are also kept track of to draw the threads.
     ArrayList<Integer> y;
     ArrayList<Double> x, slopes;
     ArrayList<Integer> thicknesses;
@@ -51,11 +50,11 @@ class Row {
             last_y = new ArrayList<Integer>();
 
             for (int i=1; i<=n; i++) {
-                x.add(i*20.0); //starting points are spaced out 20 pixels
+                x.add(i*20.0); // the starting points are spaced out 20 pixels
                 y.add(0);
-                slopes.add( (r*i ) % 1 ); //slopes are the fractional part of multiples of the golden ratio 
-                thicknesses.add( 1); //initial thickness is 1
-                last_x.add(i*20.0); //starting points are spaced out 20 pixels
+                slopes.add( (r*i ) % 1 ); // the slopes are the fractional part of multiples of the golden ratio (or some other parameter)
+                thicknesses.add( 1); 
+                last_x.add(i*20.0); 
                 last_y.add(0);
             }
         }
@@ -72,7 +71,7 @@ class Row {
             y.set(i, next_y);
         }
         for (int i=0; i< x.size()-2; i++) {
-            //3 threads merging
+            // 3 threads merging simultaneously
             if (x.get(i) >= x.get(i+1) && x.get(i) >= x.get(i+2) ) {
                 int next_thickness = thicknesses.get(i) + thicknesses.get(i+1)+thicknesses.get(i+2);
                 double next_slope = (slopes.get(i+1) + slopes.get(i)+ slopes.get(i+2) )/ 3.0;// resulting slope is the average
@@ -93,7 +92,7 @@ class Row {
                 slopes.remove(i+1);
                 thicknesses.remove(i+1);
             }
-            // 2 threads merging
+            // 2 threads merging simultaneously
             else if (x.get(i) >= x.get(i+1) ) {
                     int next_thickness = thicknesses.get(i) + thicknesses.get(i+1);
                     double next_slope = (slopes.get(i+1) + slopes.get(i) )/ 2.0;// resulting slope is the average
@@ -108,7 +107,7 @@ class Row {
                     slopes.remove(i+1);
                     thicknesses.remove(i+1);
             }
-            //the last two threads merge
+            // the last two threads merge
             else if (x.get(i+1) >= x.get(i+2) && (i+2 == x.size()-1)) {
                     int next_thickness = thicknesses.get(i+1) + thicknesses.get(i+2);
                     double next_slope = (slopes.get(i+1) + slopes.get(i+2) )/ 2.0;// resulting slope is the average
@@ -128,24 +127,23 @@ class Row {
 
 }
 
-// here we paint and run the threads
-// finetune how many starting threads, how many iterations, and how many test cases here
+// Here we draw and run the threads.
+// Finetune how many starting threads, how many iterations, and how many test cases here
 class MyCanvas extends JComponent {
-    // this is just to color thicknesses which aren't Fibonacci in red
+    // This is just to color thicknesses which aren't Fibonacci in red.
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
 
     public void paint(Graphics g) {
         double r = (1.0 + Math.sqrt(5) )/2.0  ;
         // some other values for r 
-        // double r_squared = Math.pow(r, 2) ; 
-        // double r2 = Math.sqrt(2); // like in Wythoff paper, with a = 2
-        // double r3 = (Math.sqrt(13) -1.0)/2.0     ; // like in Wythoff paper, with a = 3
-        // double r4 = (Math.sqrt(5)- 1.0);
+        // double r2 = Math.sqrt(2); 
+        // double r3 = (Math.sqrt(13) -1.0)/2.0;
+        // double r4 = Math.sqrt(5);
         // Random rand = new Random();
-        // double randomValue = rand.nextDouble(); 
+        // double r5 = rand.nextDouble(); 
         
-        //run threads for 30 starting threads and draw the output
+        // run threads for 30 starting threads and draw the output
         runThreads(r, 30, 10000, g, true, false, true, true);
 
         // run threads for i=1 to i=100 starting threads
@@ -164,7 +162,7 @@ class MyCanvas extends JComponent {
      */
     private void runThreads(double r, int startingThreads, int numIterations, Graphics g, boolean draw, boolean count_fib_flag, boolean fib_output_flag, boolean info_flag) {
         Row row = new Row(startingThreads, r);
-        //draw the first 800 iterations, only if flag draw = true
+        // draw the first 800 iterations, only if the flag "draw" is set to true
         for (int i=0;i<numIterations;i++) {
             if (i < 800 && draw) {
                 for (int k=0; k < row.x.size(); k++) {
@@ -190,7 +188,6 @@ class MyCanvas extends JComponent {
                     System.out.print(ANSI_RED + next + ANSI_RESET + "; ");
             }   
         }
-        // to export the count of fibonacci nrs 
         // column names: initial threads, iterations, final threads, count_fib 
         if (count_fib_flag)
             System.out.printf("%d; %d; %d; %d; ", startingThreads,numIterations,row.x.size(), count_fib);
@@ -199,12 +196,12 @@ class MyCanvas extends JComponent {
 }
 
 public class GoldenRatioSlopesSystem {
-    //this method is used to draw the graphics 
-  public static void main(String[] a) {
-    JFrame window = new JFrame();
-    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    window.setBounds(30, 30, 1200, 700);
-    window.getContentPane().add(new MyCanvas());
-    window.setVisible(true);
-  }
+    // this method is used to draw the graphics 
+    public static void main(String[] a) {
+        JFrame window = new JFrame();
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setBounds(30, 30, 1200, 700);
+        window.getContentPane().add(new MyCanvas());
+        window.setVisible(true);
+    }
 }
